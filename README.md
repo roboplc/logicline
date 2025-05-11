@@ -41,14 +41,14 @@ Where:
 
 * **Rack** is a logic state either for the whole process or for a group of
   rules. In the first case, a [`global`] module can be used which contains a
-  pre-defined process ladder instance. Rack can also act as an object factory
-  for [`Processor`] instances, in case if created from a [`Rack`]
-  instance, the processors have the common recording flag.
+  pre-defined process global instance. Rack can also act as an object factory
+  for [`Processor`] instances, in case if created from a [`Rack`] instance, the
+  processors have the common recording flag.
 
 ```rust
 use logicline::Rack;
 
-let ladder = Rack::new();
+let rack = Rack::new();
 ```
 
 * **Processor** is a logic processor that processes a chain of rules. The
@@ -58,8 +58,8 @@ let ladder = Rack::new();
 ```rust
 use logicline::Rack;
 
-let ladder = Rack::new();
-let processor = ladder.processor();
+let rack = Rack::new();
+let processor = rack.processor();
 ```
 
 * **Line** is an instance which is used to structure logic as a sequence of
@@ -186,8 +186,8 @@ let env = Env {
     humidity: 40.0,
 };
 
-let ladder = Rack::new();
-let mut processor = ladder.processor();
+let rack = Rack::new();
+let mut processor = rack.processor();
 
 let mut env_healthy = true;
 
@@ -210,8 +210,8 @@ external variable which is recorded as an input:
 ```rust
 use logicline::{action, Rack};
 
-let ladder = Rack::new();
-let mut processor = ladder.processor();
+let rack = Rack::new();
+let mut processor = rack.processor();
 
 let temperature = 25.0;
 let humidity = 40.0;
