@@ -1,0 +1,275 @@
+.logicline_line-container {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--logicline-decorator-color);
+  border-radius: 8px;
+  width: 100%;
+}
+
+.logicline_line-wrapper {
+  display: flex;
+  align-items: center;
+  border-top: 2px solid var(--logicline-decorator-color);
+  padding: 10px 45px;
+  position: relative;
+  overflow: auto;
+}
+
+.logicline_line-title {
+  position: absolute;
+  top: 0px;
+  left: 45px;
+  background: var(--logicline-decorator-color);
+  padding: 0 8px;
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--logicline-secondary-text-color);
+}
+
+.logicline_block-group {
+  display: flex;
+  position: relative;
+  min-width: 220px;
+  max-width: 220px;
+}
+
+.logicline_straight {
+  width: 100%;
+  height: 2px;
+  border-top: 2px dashed var(--logicline-accent-color);
+}
+
+.logicline_straight-disabled {
+  border-top: 2px dashed var(--logicline-disabled-color) !important;
+}
+
+.logicline_straight-arrow {
+  width: 100%;
+  height: 2px;
+  border-top: 2px dashed var(--logicline-accent-color);
+}
+
+.logicline_straight-arrow::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translate(50%, -50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--logicline-accent-color);
+  border-right: 2px solid var(--logicline-accent-color);
+}
+
+.logicline_straight-arrow-disabled {
+  width: 100%;
+  height: 2px;
+  border-top: 2px dashed var(--logicline-disabled-color);
+}
+
+.logicline_straight-arrow-disabled::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translate(50%, -50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--logicline-disabled-color);
+  border-right: 2px solid var(--logicline-disabled-color);
+}
+
+.logicline_branch-wrapper {
+  position: relative;
+  padding-right: 50px;
+  height: 100%;
+}
+
+.logicline_branch-lines {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+  height: 100%;
+  align-items: center;
+}
+
+.logicline_branch-top {
+  display: flex;
+  position: relative;
+  min-width: 280px;
+  max-width: 280px;
+  height: 100%;
+  margin-top: 35%;
+}
+
+.logicline_branch-bottom {
+  display: flex;
+  position: relative;
+  min-width: 280px;
+  max-width: 280px;
+  height: 50%;
+  margin-top: 5%;
+}
+
+.logicline_branch-top-left::before {
+  content: "";
+  position: absolute;
+  top: 0%;
+  left: 0;
+  width: 2px;
+  height: 65%;
+  border-left: 2px dashed var(--logicline-accent-color);
+  transform: translateX(-50%);
+}
+
+.logicline_branch-top-left--disabled::before {
+  border-left: 2px dashed var(--logicline-disabled-color);
+}
+
+.logicline_branch-bottom-left::before {
+  content: "";
+  position: absolute;
+  bottom: 96.5%;
+  left: 0;
+  width: 2px;
+  height: 80%;
+  border-left: 2px dashed var(--logicline-accent-color);
+  transform: translateX(-50%);
+}
+
+.logicline_branch-bottom-left--disabled::before {
+  border-left: 2px dashed var(--logicline-disabled-color);
+}
+
+.logicline_arrow-left-top,
+.logicline_arrow-left-bottom {
+  height: 2px;
+  position: relative;
+  border-top: 2px dashed var(--logicline-accent-color);
+  min-width: 50px;
+  max-width: 50px;
+}
+
+.logicline_arrow-left-top--disabled,
+.logicline_arrow-left-bottom--disabled {
+  border-top: 2px dashed var(--logicline-disabled-color);
+}
+
+.logicline_arrow-left-top::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: 6px;
+  transform: translate(50%, -50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--logicline-accent-color);
+  border-right: 2px solid var(--logicline-accent-color);
+}
+
+.logicline_arrow-left-bottom::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: 6px;
+  transform: translate(50%, -50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--logicline-accent-color);
+  border-right: 2px solid var(--logicline-accent-color);
+}
+
+.logicline_arrow-left-top--disabled::after,
+.logicline_arrow-left-bottom--disabled::after {
+  border-top: 2px solid var(--logicline-disabled-color);
+  border-right: 2px solid var(--logicline-disabled-color);
+}
+
+/* ////////right////////////////////// */
+.logicline_branch-top-right::after {
+  content: "";
+  position: absolute;
+  top: 0%;
+  right: -2%;
+  width: 2px;
+  height: 65%;
+  border-left: 2px dashed var(--logicline-accent-color);
+  transform: translateX(-50%);
+}
+
+.logicline_branch-top-right--disabled::after {
+  content: "";
+  position: absolute;
+  top: 0%;
+  right: -2%;
+  width: 2px;
+  height: 65%;
+  border-left: 2px dashed var(--logicline-disabled-color);
+  transform: translateX(-50%);
+}
+
+.logicline_branch-bottom-right::after {
+  content: "";
+  position: absolute;
+  bottom: 96.5%;
+  right: -2%;
+  width: 2px;
+  height: 80%;
+  border-left: 2px dashed var(--logicline-accent-color);
+  transform: translateX(-50%);
+}
+
+.logicline_branch-bottom-right--disabled:after {
+  content: "";
+  position: absolute;
+  bottom: 96.5%;
+  right: -2%;
+  width: 2px;
+  height: 80%;
+  border-left: 2px dashed var(--logicline-disabled-color);
+  transform: translateX(-50%);
+}
+
+.logicline_arrow-right-top,
+.logicline_arrow-right-bottom {
+  height: 2px;
+  position: relative;
+  border-top: 2px dashed var(--logicline-accent-color);
+  width: 100%;
+}
+
+.logicline_arrow-right-top--disabled,
+.logicline_arrow-right-bottom--disabled {
+  border-top: 2px dashed var(--logicline-disabled-color);
+}
+
+.logicline_merge-line {
+  position: absolute;
+  top: 50%;
+  right: 0%;
+  width: 50px;
+  height: 2px;
+  border-top: 2px dashed var(--logicline-accent-color);
+  transform: translateY(-50%);
+}
+
+.logicline_merge-line::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: 6.5px;
+  transform: translate(50%, -50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--logicline-accent-color);
+  border-right: 2px solid var(--logicline-accent-color);
+}
+
+.logicline_merge-line--disabled {
+  border-top: 2px dashed var(--logicline-disabled-color);
+}
+
+.logicline_merge-line--disabled::after {
+  border-top: 2px solid var(--logicline-disabled-color);
+  border-right: 2px solid var(--logicline-disabled-color);
+}
