@@ -1,4 +1,14 @@
-# Logic Line - a logic processing engine
+<h2>
+  Logic Line - a logic processing engine for Rust
+  <a href="https://crates.io/crates/logicline"><img alt="crates.io page" src="https://img.shields.io/crates/v/logicline.svg"></img></a>
+  <a href="https://docs.rs/logicline"><img alt="docs.rs page" src="https://docs.rs/logicline/badge.svg"></img></a>
+  <a href="https://github.com/roboplc/logicline/actions/workflows/ci.yml">
+    <img alt="GitHub Actions CI" src="https://github.com/roboplc/logicline/actions/workflows/ci.yml/badge.svg"></img>
+  </a>
+</h2>
+
+<img src="https://raw.githubusercontent.com/roboplc/logicline/main/pic/ll.gif"
+width="800" />
 
 ## Introduction
 
