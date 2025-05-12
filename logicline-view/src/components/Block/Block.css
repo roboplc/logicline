@@ -119,6 +119,14 @@
   background-color: var(--logicline-decorator-color);
 }
 
+.logicline_block-body--filled {
+  padding: 0 6px;
+}
+
+.logicline_block-body--empty {
+  padding: 9px 6px;
+}
+
 .logicline_block-input {
   display: flex;
   align-items: center;

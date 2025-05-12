@@ -93,12 +93,11 @@ export const Block = ({
           {step.name}
         </div>
         <div
-          className="logicline_block-body"
-          style={{
-            padding: inputs.every((input) => input === null)
-              ? "9px 6px"
-              : "0 6px"
-          }}
+          className={`logicline_block-body ${
+            inputs.every((input) => input === null)
+              ? "logicline_block-body--empty"
+              : "logicline_block-body--filled"
+          }`}
         >
           {inputs.map((inputValue, idx) => (
             <div key={idx} className="logicline_block-input">

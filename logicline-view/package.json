@@ -1,6 +1,6 @@
 {
   "name": "logicline-view",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "build": "vite build && tsc src/*.mts --skipLibCheck --allowImportingTsExtensions --esModuleInterop --jsx react-jsx --declaration --lib es2020,dom,es2021.String --downlevelIteration --emitDeclarationOnly --declarationDir dist/ && mv dist/lib.d.mts dist/logicline-view.es.d.ts",
@@ -18,6 +18,12 @@
       "require": "./dist/logicline-view.umd.js"
     }
   },
+  "author": "Bohemia Automation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/roboplc/logicline/issues"
+  },
+  "homepage": "https://github.com/roboplc/logicline/",
   "peerDependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.1",

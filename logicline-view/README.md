@@ -1,6 +1,7 @@
 # logicline-view
 
-A library used to display logic line state snapshots.
+A library used to display [logic line](https://github.com/roboplc/logicline)
+state snapshots.
 
 ```react-tsx
 import { useState, useEffect } from "react";
