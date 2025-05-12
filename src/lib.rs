@@ -70,7 +70,7 @@ pub mod global {
 
     /// Installs the exporter (HTTP server) on the default address (all interfaces, 9001)
     #[cfg(feature = "exporter")]
-    pub fn install_exporter() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
+    pub fn install_exporter() -> Result<(), Box<dyn std::error::Error>> {
         install_exporter_on((IpAddr::from([0, 0, 0, 0]), DEFAULT_PORT))
     }
 
@@ -78,7 +78,7 @@ pub mod global {
     #[cfg(feature = "exporter")]
     pub fn install_exporter_on<A: ToSocketAddrs>(
         addr: A,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let server = rouille::Server::new(addr, move |request| {
             if request.method() != "GET" {
                 return rouille::Response::empty_406();
@@ -94,7 +94,8 @@ pub mod global {
                 return rouille::Response::html(include_str!("../ll-default-view/dist/index.html"));
             }
             rouille::Response::empty_404()
-        })?;
+        })
+        .map_err(|e| e.to_string())?;
         std::thread::Builder::new()
             .name("exporter".to_string())
             .spawn(move || {
