@@ -1,6 +1,6 @@
 {
   "name": "logicline-view",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "scripts": {
     "build": "vite build && tsc src/*.mts --skipLibCheck --allowImportingTsExtensions --esModuleInterop --jsx react-jsx --declaration --lib es2020,dom,es2021.String --downlevelIteration --emitDeclarationOnly --declarationDir dist/ && mv dist/lib.d.mts dist/logicline-view.es.d.ts",
