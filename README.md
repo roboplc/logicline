@@ -313,3 +313,6 @@ applications, the following features are available:
 
 Note: to switch locking policy, disable the crate default features.
 
+## About
+
+Logic Line is a part of [RoboPLC](https://www.roboplc.com/) project.
