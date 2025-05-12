@@ -1,12 +1,14 @@
-//import { data } from "./data.tsx";
 import "./index.css";
 import { createRoot } from "react-dom/client";
 import { useState, useEffect } from "react";
-import { RackView, type Snapshot } from "logicline-view";
+import { RackView, type Snapshot, type Step } from "logicline-view";
+import { ModalBox } from "./modal/ModalBox";
 import "../node_modules/logicline-view/dist/style.css";
 
 const App = () => {
   const [data, setData] = useState<Snapshot | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [step, setStep] = useState<Step | null>(null);
 
   useEffect(() => {
     let t: number;
@@ -28,12 +30,16 @@ const App = () => {
     return <div>No data</div>;
   }
   return (
-    <RackView
-      data={data}
-      onBlockClick={(v) => {
-        console.log(v);
-      }}
-    />
+    <>
+      <RackView
+        data={data}
+        onBlockClick={(v) => {
+          setStep(v);
+          setIsOpen(true);
+        }}
+      />
+      <ModalBox isOpen={isOpen} step={step} onClose={() => setIsOpen(false)} />
+    </>
   );
 };
 

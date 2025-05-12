@@ -1,0 +1,98 @@
+.logicline_modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logicline_modal-box {
+  background-color: #444;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  font-family: sans-serif;
+  position: relative;
+  max-height: 500px;
+  overflow: auto;
+}
+
+.logicline_modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logicline_modal-title {
+  color: var(--accent-color) !important;
+  font-size: 20px !important;
+}
+
+.logicline_modal-close {
+  background: transparent;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--gray-color);
+  outline: none;
+  border: none;
+  transition: color 0.3s ease;
+}
+
+.logicline_modal-close:hover,
+.logicline_modal-close:focus,
+.logicline_modal-close:active {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  color: #ff6347;
+}
+
+.logicline_modal-content {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.logicline_modal-content pre {
+  padding: 10px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.logicline_copy-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--gray-color);
+  outline: none;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.logicline_copy-button:hover,
+.logicline_copy-button:focus,
+.logicline_copy-button:active {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  background: #242424;
+}
