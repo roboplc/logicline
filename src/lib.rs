@@ -97,7 +97,7 @@ pub mod global {
         })
         .map_err(|e| e.to_string())?;
         std::thread::Builder::new()
-            .name("exporter".to_string())
+            .name("ll-exporter".to_string())
             .spawn(move || {
                 server.run();
             })?;
