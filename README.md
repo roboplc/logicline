@@ -72,8 +72,8 @@ let processor = rack.processor();
 ```rust,ignore
 use logicline::{action, Rack};
 
-let mut state = Rack::new().with_recording_enabled();
-let mut processor = state.processor();
+let mut rack = Rack::new().with_recording_enabled();
+let mut processor = rack.processor();
 
 // Some fan state
 let mut fan = false;
@@ -98,13 +98,13 @@ processor
         Some(())
     }));
 
-state.ingress(&mut processor);
+rack.ingress(&mut processor);
 ```
 
-When recorded, the state can be printed in a human-readable format:
+When recorded, the rack state can be printed in a human-readable format:
 
 ```rust,ignore
-println!("{}", state);
+println!("{}", rack);
 ```
 
 ```ignore
@@ -115,7 +115,7 @@ fan_on: temp_high(31.0) -> fan_on
 Or serialized, e.g. to JSON for web visualization:
 
 ```rust,ignore
-let serialized = serde_json::to_string_pretty(&state).unwrap();
+let serialized = serde_json::to_string_pretty(&rack).unwrap();
 ```
 
 ```json
@@ -260,10 +260,15 @@ automatically sorted by their names.
 
 ## Performance
 
-When the recording is disabled (either feature or the runtime state/processor
+When recording is disabled (either feature or the runtime state/processor
 flag), the logic lines bring almost no overhead in comparison to the
 traditional combinators, such as similar methods of [`std::option::Option`] and
 [`std::result::Result`].
+
+When recording is enabled, it is recommended to clone rack instances before
+processing them in case if the instances are under Mutex or RwLock. This can be
+performed either with [`Rack::clone`] with [`Rack::snapshot`] methods. The
+second variant returns a [`Snapshot`] instance which contains line states only.
 
 ## Data visualization
 
