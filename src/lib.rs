@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "recording")]
 mod recording;
 #[cfg(feature = "recording")]
-pub use recording::{InputKind, LineState, Snapshot, StepState, StepStateInfo};
+pub use recording::{InputKind, LineState, Snapshot, SnapshotFormatter, StepState, StepStateInfo};
 #[cfg(feature = "recording")]
 use serde_json::Value;
 
@@ -40,6 +40,23 @@ pub mod global {
     use rtsc::pi::Mutex;
 
     static GLOBAL_LADDER: Lazy<Mutex<Rack>> = Lazy::new(|| Mutex::new(Rack::new()));
+
+    #[cfg(all(feature = "recording", feature = "exporter"))]
+    static SNAPSHOT_FORMATTER: once_cell::sync::OnceCell<
+        Box<dyn super::recording::SnapshotFormatter>,
+    > = once_cell::sync::OnceCell::new();
+
+    #[cfg(all(feature = "recording", feature = "exporter"))]
+    /// Sets the snapshot formatter for the global rack state (used for exporter only)
+    ///
+    /// # Panics
+    ///
+    /// Panics if the snapshot formatter is already set
+    pub fn set_snapshot_formatter(formatter: Box<dyn super::recording::SnapshotFormatter>) {
+        SNAPSHOT_FORMATTER
+            .set(formatter)
+            .unwrap_or_else(|_| panic!("Snapshot formatter already set"));
+    }
 
     /// Sets the recording state for the global rack state
     #[cfg(feature = "recording")]
@@ -84,7 +101,11 @@ pub mod global {
                 return rouille::Response::empty_406();
             }
             if request.url() == "/state" {
-                return rouille::Response::json(&snapshot())
+                let mut snapshot = snapshot();
+                if let Some(formatter) = SNAPSHOT_FORMATTER.get() {
+                    snapshot = formatter.format(snapshot);
+                }
+                return rouille::Response::json(&snapshot)
                     .with_additional_header("Access-Control-Allow-Origin", "*")
                     .with_additional_header("Access-Control-Allow-Methods", "GET, OPTIONS")
                     .with_additional_header("Access-Control-Allow-Headers", "Content-Type");

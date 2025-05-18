@@ -303,6 +303,48 @@ all the lines programmed.
 In case of event-processing model, it is recommended to send dummy events at
 the program start to fill the logic state with the initial chain values.
 
+## Data safety
+
+Some logic chains might contain sensitive data, which should be hidden either
+from everyone or accessible only for users with certain permissions.
+
+The default exporter provides a built-in way to post-format data snapshots. Let
+us hide inputs for all steps with name starting with `voltage`:
+
+```rust,ignore
+struct SensitiveDataFormatter {}
+
+impl logicline::SnapshotFormatter for SensitiveDataFormatter {
+    fn format(&self, mut snapshot: Snapshot) -> Snapshot {
+        for line in snapshot.lines_mut().values_mut() {
+            for step in line.steps_mut() {
+                for i in step.info_mut() {
+                    // Step data is under Arc to let it be cloned without
+                    // overhead, so we need to replace the original step data
+                    // with the new one. In this example a helper method is used.
+                    if i.name().starts_with("voltage") {
+                        *i = i.to_modified(
+                            None,
+                            Some(serde_json::Value::String("<hidden>".to_owned())),
+                            None,
+                            None,
+                        );
+                    }
+                }
+            }
+        }
+        snapshot
+    }
+}
+
+// then in the main function
+logicline::global::set_snapshot_formatter(Box::new(SensitiveDataFormatter {}));
+```
+
+The assigned formatter formats all snapshots requested by the exporter. To
+apply a similar logic in own exporter (e.g. with authorization implemented),
+consider using a similar way (with or without the provided trait).
+
 ## Locking safety
 
 By default, the crate (both the server and the client modules) uses

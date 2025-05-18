@@ -577,7 +577,7 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "logicline"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "erased-serde",
  "once_cell",

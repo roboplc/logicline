@@ -83,6 +83,10 @@ impl LineState {
     pub fn steps(&self) -> &[StepState] {
         &self.steps
     }
+    /// Steps states of the line, mutable
+    pub fn steps_mut(&mut self) -> &mut [StepState] {
+        &mut self.steps
+    }
     //pub(crate) fn push_step_state<INPUT: Serialize>(
     //&mut self,
     //name: impl Into<Cow<'static, str>>,
@@ -135,6 +139,20 @@ impl StepState {
             StepState::Multi(multi) => multi.iter().all(|s| s.passed()),
         }
     }
+    /// Step state info, single-value vector for single step state, multi-value vector for multi step state
+    pub fn info(&self) -> Vec<&StepStateInfo> {
+        match self {
+            StepState::Single(single) => vec![single],
+            StepState::Multi(multi) => multi.iter().collect::<Vec<_>>(),
+        }
+    }
+    /// Step state info mutable
+    pub fn info_mut(&mut self) -> Vec<&mut StepStateInfo> {
+        match self {
+            StepState::Single(single) => vec![single],
+            StepState::Multi(multi) => multi.iter_mut().collect::<Vec<_>>(),
+        }
+    }
 }
 
 /// Single step state information
@@ -171,6 +189,25 @@ struct StepStateInner {
 }
 
 impl StepStateInfo {
+    /// Returns modified version of the step state info
+    pub fn to_modified(
+        &self,
+        name: Option<&str>,
+        input: Option<Value>,
+        input_kind: Option<InputKind>,
+        passed: Option<bool>,
+    ) -> Self {
+        StepStateInfo {
+            inner: Arc::new(StepStateInner {
+                name: name
+                    .map(|n| n.to_owned().into())
+                    .unwrap_or_else(|| self.inner.name.clone()),
+                input: input.unwrap_or_else(|| self.inner.input.clone()),
+                input_kind: input_kind.unwrap_or(self.inner.input_kind),
+                passed: passed.unwrap_or(self.inner.passed),
+            }),
+        }
+    }
     pub(crate) fn new<INPUT: Serialize>(
         name: impl Into<Cow<'static, str>>,
         input: INPUT,
@@ -231,6 +268,12 @@ impl fmt::Display for Rack {
     }
 }
 
+/// Modifies snapshots before serving/displaying
+pub trait SnapshotFormatter: Send + Sync {
+    /// Format the snapshot
+    fn format(&self, snapshot: Snapshot) -> Snapshot;
+}
+
 /// State snapshot
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Snapshot {
@@ -245,6 +288,14 @@ impl Snapshot {
     /// Lines map
     pub fn lines(&self) -> &BTreeMap<Cow<'static, str>, LineState> {
         &self.lines
+    }
+    /// Mutable state of the line
+    pub fn line_state_mut(&mut self, name: &str) -> Option<&mut LineState> {
+        self.lines.get_mut(name)
+    }
+    /// Lines map
+    pub fn lines_mut(&mut self) -> &mut BTreeMap<Cow<'static, str>, LineState> {
+        &mut self.lines
     }
 }
 
