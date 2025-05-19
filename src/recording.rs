@@ -199,9 +199,7 @@ impl StepStateInfo {
     ) -> Self {
         StepStateInfo {
             inner: Arc::new(StepStateInner {
-                name: name
-                    .map(|n| n.to_owned().into())
-                    .unwrap_or_else(|| self.inner.name.clone()),
+                name: name.map_or_else(|| self.inner.name.clone(), |n| n.to_owned().into()),
                 input: input.unwrap_or_else(|| self.inner.input.clone()),
                 input_kind: input_kind.unwrap_or(self.inner.input_kind),
                 passed: passed.unwrap_or(self.inner.passed),
