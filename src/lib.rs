@@ -483,6 +483,20 @@ impl Rack {
             lines: self.lines.clone(),
         }
     }
+    /// Creates a filtered snapshot of the current state of the lines
+    #[cfg(feature = "recording")]
+    pub fn snapshot_filtered<P>(&self, predicate: P) -> Snapshot
+    where
+        P: Fn(&LineState) -> bool,
+    {
+        let lines = self
+            .lines
+            .iter()
+            .filter(|(_, line)| predicate(line))
+            .map(|(name, line)| (name.clone(), line.clone()))
+            .collect();
+        Snapshot { lines }
+    }
     /// Creates a new processor
     pub fn processor(&self) -> Processor {
         Processor {
