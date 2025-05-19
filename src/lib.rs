@@ -69,6 +69,15 @@ pub mod global {
     pub fn snapshot() -> super::Snapshot {
         GLOBAL_LADDER.lock().snapshot()
     }
+    ///
+    /// Creates a filtered snapshot of the global state
+    #[cfg(feature = "recording")]
+    pub fn snapshot_filtered<P>(predicate: P) -> super::Snapshot
+    where
+        P: Fn(&super::LineState) -> bool,
+    {
+        GLOBAL_LADDER.lock().snapshot_filtered(predicate)
+    }
 
     /// Creates a new processor for the global state
     pub fn processor() -> Processor {
