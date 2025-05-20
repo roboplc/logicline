@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "bmat": "^0.1.32",
-    "logicline-view": "file:/opt/logicline/logicline-view",
+    "logicline-view": "file:../logicline-view",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

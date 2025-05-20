@@ -2,7 +2,7 @@ import React from "react";
 import { useMemo } from "react";
 import "./ModalBox.css";
 import { type Step } from "logicline-view";
-import { сopyTextClipboard } from "bmat/dom";
+import { copyTextClipboard } from "bmat/dom";
 import Icons from "../assets/icons/index";
 
 interface ModalProps {
@@ -19,7 +19,7 @@ export const ModalBox: React.FC<ModalProps> = ({ isOpen, step, onClose }) => {
   }, [step?.input]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(formattedJson);
+    copyClipboardText(formattedJson);
   };
 
   return (
