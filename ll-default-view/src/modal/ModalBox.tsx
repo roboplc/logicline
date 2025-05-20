@@ -19,7 +19,7 @@ export const ModalBox: React.FC<ModalProps> = ({ isOpen, step, onClose }) => {
   }, [step?.input]);
 
   const handleCopy = () => {
-    copyClipboardText(formattedJson);
+    copyTextClipboard(formattedJson);
   };
 
   return (
