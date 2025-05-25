@@ -64,6 +64,12 @@ pub mod global {
         GLOBAL_LADDER.lock().set_recording(recording);
     }
 
+    /// Is the global rack state recording
+    #[cfg(feature = "recording")]
+    pub fn is_recording() -> bool {
+        GLOBAL_LADDER.lock().is_recording()
+    }
+
     /// Creates a snapshot of the global state
     #[cfg(feature = "recording")]
     pub fn snapshot() -> super::Snapshot {
@@ -527,6 +533,12 @@ impl Rack {
     #[cfg(feature = "recording")]
     pub fn set_recording(&mut self, recording: bool) {
         self.recording.store(recording, atomic::Ordering::SeqCst);
+    }
+
+    /// Returns `true` if the rack is recording
+    #[cfg(feature = "recording")]
+    pub fn is_recording(&self) -> bool {
+        self.recording.load(atomic::Ordering::SeqCst)
     }
 }
 
