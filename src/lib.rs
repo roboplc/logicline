@@ -30,14 +30,18 @@ pub mod global {
 
     use super::{Processor, Rack};
 
-    #[cfg(feature = "locking-default")]
-    use parking_lot::Mutex;
-
-    #[cfg(feature = "locking-rt")]
-    use parking_lot_rt::Mutex;
-
     #[cfg(feature = "locking-rt-safe")]
     use rtsc::pi::Mutex;
+
+    #[cfg(all(feature = "locking-rt", not(feature = "locking-rt-safe"),))]
+    use parking_lot_rt::Mutex;
+
+    #[cfg(all(
+        feature = "locking-default",
+        not(feature = "locking-rt-safe"),
+        not(feature = "locking-rt")
+    ))]
+    use parking_lot::Mutex;
 
     static GLOBAL_LADDER: LazyLock<Mutex<Rack>> = LazyLock::new(|| Mutex::new(Rack::new()));
 

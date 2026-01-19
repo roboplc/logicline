@@ -1,6 +1,6 @@
 [package]
 name = "logicline"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2024"
 authors = ["Serhij S. <div@altertech.com>"]
 license = "Apache-2.0"
@@ -18,7 +18,7 @@ features = []
 
 [dependencies]
 erased-serde = { version = "0.4", optional = true }
-rtsc = "0.3"
+rtsc = "0.4.3"
 parking_lot = { version = "0.12.3", optional = true }
 parking_lot_rt = { version = "0.12.1", optional = true }
 serde = { version = "1.0", features = ["derive", "rc"], optional = true }
