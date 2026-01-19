@@ -26,9 +26,9 @@ pub mod global {
 
     #[cfg(feature = "exporter")]
     use std::net::{IpAddr, ToSocketAddrs};
+    use std::sync::LazyLock;
 
     use super::{Processor, Rack};
-    use once_cell::sync::Lazy;
 
     #[cfg(feature = "locking-default")]
     use parking_lot::Mutex;
@@ -39,12 +39,11 @@ pub mod global {
     #[cfg(feature = "locking-rt-safe")]
     use rtsc::pi::Mutex;
 
-    static GLOBAL_LADDER: Lazy<Mutex<Rack>> = Lazy::new(|| Mutex::new(Rack::new()));
+    static GLOBAL_LADDER: LazyLock<Mutex<Rack>> = LazyLock::new(|| Mutex::new(Rack::new()));
 
     #[cfg(all(feature = "recording", feature = "exporter"))]
-    static SNAPSHOT_FORMATTER: once_cell::sync::OnceCell<
-        Box<dyn super::recording::SnapshotFormatter>,
-    > = once_cell::sync::OnceCell::new();
+    static SNAPSHOT_FORMATTER: std::sync::OnceLock<Box<dyn super::recording::SnapshotFormatter>> =
+        std::sync::OnceLock::new();
 
     #[cfg(all(feature = "recording", feature = "exporter"))]
     /// Sets the snapshot formatter for the global rack state (used for exporter only)
