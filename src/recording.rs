@@ -32,13 +32,13 @@ impl fmt::Display for LineState {
                 write!(f, " -> ")?;
             }
             match step {
-                StepState::Single(ref s) => {
+                StepState::Single(s) => {
                     write!(f, "{}", s.name())?;
                     if s.input() != &Value::Null {
                         write!(f, "({})", s.input())?;
                     }
                 }
-                StepState::Multi(ref ss) => {
+                StepState::Multi(ss) => {
                     write!(f, "( ")?;
                     for (s_no, s) in ss.iter().enumerate() {
                         if s_no > 0 {

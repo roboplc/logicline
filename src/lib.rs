@@ -4,9 +4,9 @@
 use std::{borrow::Cow, marker::PhantomData};
 #[cfg(feature = "recording")]
 use std::{
-    collections::{btree_map, BTreeMap},
+    collections::{BTreeMap, btree_map},
     mem,
-    sync::{atomic, Arc},
+    sync::{Arc, atomic},
 };
 
 #[cfg(feature = "recording")]
@@ -107,35 +107,81 @@ pub mod global {
     }
 
     /// Installs the exporter (HTTP server) on the specified address
+    ///
+    /// # Panics
+    ///
+    /// Should not panic
     #[cfg(feature = "exporter")]
     pub fn install_exporter_on<A: ToSocketAddrs>(
         addr: A,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let server = rouille::Server::new(addr, move |request| {
-            if request.method() != "GET" {
-                return rouille::Response::empty_406();
-            }
-            if request.url() == "/state" {
-                let mut snapshot = snapshot();
-                if let Some(formatter) = SNAPSHOT_FORMATTER.get() {
-                    snapshot = formatter.format(snapshot);
-                }
-                return rouille::Response::json(&snapshot)
-                    .with_additional_header("Access-Control-Allow-Origin", "*")
-                    .with_additional_header("Access-Control-Allow-Methods", "GET, OPTIONS")
-                    .with_additional_header("Access-Control-Allow-Headers", "Content-Type");
-            }
-            #[cfg(feature = "exporter-ui")]
-            if request.url() == "/" {
-                return rouille::Response::html(include_str!("../ll-default-view/dist/index.html"));
-            }
-            rouille::Response::empty_404()
-        })
-        .map_err(|e| e.to_string())?;
+        let server = tiny_http::Server::http(addr).map_err(|e| e.to_string())?;
         std::thread::Builder::new()
             .name("ll-exporter".to_string())
             .spawn(move || {
-                server.run();
+                loop {
+                    let Ok(request) = server.recv() else {
+                        std::thread::sleep(std::time::Duration::from_millis(100));
+                        continue;
+                    };
+                    if request.method() != &tiny_http::Method::Get {
+                        let response = tiny_http::Response::empty(406);
+                        let _ = request.respond(response);
+                        continue;
+                    }
+                    if request.url() == "/state" {
+                        let mut snapshot = snapshot();
+                        if let Some(formatter) = SNAPSHOT_FORMATTER.get() {
+                            snapshot = formatter.format(snapshot);
+                        }
+                        let json = serde_json::to_string(&snapshot).unwrap_or_default();
+                        let mut response = tiny_http::Response::from_string(json);
+                        response.add_header(
+                            tiny_http::Header::from_bytes(
+                                &b"Content-Type"[..],
+                                &b"application/json"[..],
+                            )
+                            .unwrap(),
+                        );
+                        response.add_header(
+                            tiny_http::Header::from_bytes(
+                                &b"Access-Control-Allow-Origin"[..],
+                                &b"*"[..],
+                            )
+                            .unwrap(),
+                        );
+                        response.add_header(
+                            tiny_http::Header::from_bytes(
+                                &b"Access-Control-Allow-Methods"[..],
+                                &b"GET, OPTIONS"[..],
+                            )
+                            .unwrap(),
+                        );
+                        response.add_header(
+                            tiny_http::Header::from_bytes(
+                                &b"Access-Control-Allow-Headers"[..],
+                                &b"Content-Type"[..],
+                            )
+                            .unwrap(),
+                        );
+                        let _ = request.respond(response);
+                        continue;
+                    }
+                    #[cfg(feature = "exporter-ui")]
+                    if request.url() == "/" {
+                        let mut response = tiny_http::Response::from_string(include_str!(
+                            "../ll-default-view/dist/index.html"
+                        ));
+                        response.add_header(
+                            tiny_http::Header::from_bytes(&b"Content-Type"[..], &b"text/html"[..])
+                                .unwrap(),
+                        );
+                        let _ = request.respond(response);
+                        continue;
+                    }
+                    let response = tiny_http::Response::empty(404);
+                    let _ = request.respond(response);
+                }
             })?;
         Ok(())
     }
@@ -155,11 +201,7 @@ pub mod ops {
     /// Logical NOT operation. In case if the input is `Some`, returns `None`, otherwise returns
     /// `Some(())`
     pub fn not(input: Option<()>) -> Option<()> {
-        if input.is_some() {
-            None
-        } else {
-            Some(())
-        }
+        if input.is_some() { None } else { Some(()) }
     }
 }
 
@@ -225,19 +267,21 @@ where
         #[cfg(feature = "recording")]
         let input_kind1 = action1.input_kind();
         #[cfg(feature = "recording")]
-        let recorded_input1 = self
-            .processor_is_recording()
-            .then(|| action1.take_recorded_input_serialized(self.input.as_ref()))
-            .unwrap_or_default();
+        let recorded_input1 = if self.processor_is_recording() {
+            action1.take_recorded_input_serialized(self.input.as_ref())
+        } else {
+            <_>::default()
+        };
         #[allow(unused_mut)]
         let mut action2 = action2.into();
         #[cfg(feature = "recording")]
         let input_kind2 = action2.input_kind();
         #[cfg(feature = "recording")]
-        let recorded_input2 = self
-            .processor_is_recording()
-            .then(|| action2.take_recorded_input_serialized(self.input.as_ref()))
-            .unwrap_or_default();
+        let recorded_input2 = if self.processor_is_recording() {
+            action2.take_recorded_input_serialized(self.input.as_ref())
+        } else {
+            <_>::default()
+        };
         if !self.active || self.input.is_none() {
             #[cfg(feature = "recording")]
             {
@@ -340,10 +384,11 @@ where
             };
         }
         #[cfg(feature = "recording")]
-        let recorded_input = self
-            .processor_is_recording()
-            .then(|| action.take_recorded_input_serialized(self.input.as_ref()))
-            .unwrap_or_default();
+        let recorded_input = if self.processor_is_recording() {
+            action.take_recorded_input_serialized(self.input.as_ref())
+        } else {
+            <_>::default()
+        };
         if let Some(output) = (action.f)(self.input.take().unwrap()) {
             #[cfg(feature = "recording")]
             record_processed!(action.name, true, recorded_input);
@@ -572,7 +617,11 @@ impl Processor {
         self.recording.load(atomic::Ordering::SeqCst)
     }
     /// Creates a new logical line
-    pub fn line<INPUT>(&mut self, name: impl Into<Cow<'static, str>>, input: INPUT) -> Step<INPUT> {
+    pub fn line<INPUT>(
+        &mut self,
+        name: impl Into<Cow<'static, str>>,
+        input: INPUT,
+    ) -> Step<'_, INPUT> {
         let name = name.into();
         #[cfg(feature = "recording")]
         if self.is_recording() {
@@ -614,19 +663,11 @@ mod test {
 
         #[allow(clippy::unnecessary_wraps)]
         fn temperature_critical(temp: f32) -> Option<()> {
-            if temp > 90. {
-                Some(())
-            } else {
-                None
-            }
+            if temp > 90. { Some(()) } else { None }
         }
 
         fn voltage_critical(voltage: u16) -> Option<()> {
-            if voltage > 300 {
-                Some(())
-            } else {
-                None
-            }
+            if voltage > 300 { Some(()) } else { None }
         }
 
         #[cfg_attr(feature = "recording", derive(Serialize))]
@@ -649,34 +690,38 @@ mod test {
         let mut line2_active = true;
         #[cfg(feature = "recording")]
         state.set_recording(true);
-        assert!(processor
-            .line("line1", &modbus_data)
-            .then(action!(get_temp1))
-            .then(action!(temperature_critical))
-            .then(
-                action!("voltage", |()| Some(modbus_data.voltage_1))
-                    .with_recorded_input(&modbus_data.voltage_1)
-            )
-            .then(action!(voltage_critical))
-            .then(action!("OFF", |()| {
-                line1_active = false;
-                Some(())
-            }))
-            .is_active());
-        assert!(!processor
-            .line("line2", &modbus_data)
-            .then(get_temp2)
-            .then(action!(temperature_critical))
-            .then(
-                action!("voltage", |()| Some(modbus_data.voltage_2))
-                    .with_recorded_input(&modbus_data.voltage_2)
-            )
-            .then(action!(voltage_critical))
-            .then(action!("OFF", |()| {
-                line2_active = false;
-                Some(())
-            }))
-            .is_active());
+        assert!(
+            processor
+                .line("line1", &modbus_data)
+                .then(action!(get_temp1))
+                .then(action!(temperature_critical))
+                .then(
+                    action!("voltage", |()| Some(modbus_data.voltage_1))
+                        .with_recorded_input(&modbus_data.voltage_1)
+                )
+                .then(action!(voltage_critical))
+                .then(action!("OFF", |()| {
+                    line1_active = false;
+                    Some(())
+                }))
+                .is_active()
+        );
+        assert!(
+            !processor
+                .line("line2", &modbus_data)
+                .then(get_temp2)
+                .then(action!(temperature_critical))
+                .then(
+                    action!("voltage", |()| Some(modbus_data.voltage_2))
+                        .with_recorded_input(&modbus_data.voltage_2)
+                )
+                .then(action!(voltage_critical))
+                .then(action!("OFF", |()| {
+                    line2_active = false;
+                    Some(())
+                }))
+                .is_active()
+        );
         assert!(!line1_active);
         assert!(line2_active);
         state.ingress(&mut processor);

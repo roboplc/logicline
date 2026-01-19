@@ -1,4 +1,4 @@
-use logicline::{action, Rack};
+use logicline::{Rack, action};
 
 fn main() {
     let mut state = Rack::new().with_recording_enabled();
